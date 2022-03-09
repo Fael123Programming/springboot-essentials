@@ -7,10 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,4 +35,19 @@ public class CustomerController {
     public ResponseEntity<Customer> findById(@PathVariable long id) {
         return ResponseEntity.ok(customerService.findById(id));
     }
+
+    @PostMapping //POST methods are for saving data into the server.
+    public ResponseEntity<Customer> save(@RequestBody Customer customer) {
+        return new ResponseEntity<>(customerService.save(customer), HttpStatus.CREATED);
+//      HttpStatus.CREATED is 201.
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+        customerService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+//    @PutMapping
+//    public ResponseEntity<Customer> replace(@)
 }
