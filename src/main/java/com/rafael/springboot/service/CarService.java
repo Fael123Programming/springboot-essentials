@@ -2,11 +2,12 @@ package com.rafael.springboot.service;
 
 import com.rafael.springboot.domain.car.Car;
 import com.rafael.springboot.domain.car.Color;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -24,14 +25,12 @@ public class CarService {
         return cars;
     }
 
-    public Car findById(long id) {
-        Car wanted;
-        try {
-            wanted = cars.stream().filter(car -> car.getId() == id).findFirst().get();
-        } catch(NoSuchElementException ignore) {
-            wanted = null;
-        }
-        return wanted;
+    public Car findById(long id) throws ResponseStatusException {
+        return cars.stream().
+                filter(car -> car.getId() == id).
+                findFirst().
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Car with id " + id +
+                        " does not exist"));
     }
 
     public Car save(Car car) {
@@ -40,10 +39,12 @@ public class CarService {
         return car;
     }
 
-    public boolean delete(long id) {
-        Car carToDelete = findById(id);
-        if (carToDelete == null)
-            return false; //It didn't exist so throw a ResponseStatusException on the controller.
-        return cars.remove(carToDelete);
+    public void delete(long id) throws ResponseStatusException {
+        cars.remove(findById(id));
+    }
+
+    public void replace(Car car) throws ResponseStatusException {
+        delete(car.getId());
+        cars.add(car);
     }
 }

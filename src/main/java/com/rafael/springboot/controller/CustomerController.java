@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +33,7 @@ public class CustomerController {
     }
 
     @GetMapping(path = "/{id}") //localhost:8080/customers/id_number to access this method.
-    public ResponseEntity<Customer> findById(@PathVariable long id) {
+    public ResponseEntity<Customer> findById(@PathVariable long id) throws ResponseStatusException {
         return ResponseEntity.ok(customerService.findById(id));
     }
 
@@ -43,11 +44,14 @@ public class CustomerController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<Void> delete(@PathVariable long id) throws ResponseStatusException {
         customerService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-//    @PutMapping
-//    public ResponseEntity<Customer> replace(@)
+    @PutMapping //Method to replace the content of an existing object on the server.
+    public ResponseEntity<Customer> replace(@RequestBody Customer customer) throws ResponseStatusException {
+        customerService.replace(customer);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

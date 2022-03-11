@@ -29,11 +29,8 @@ public class CarController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Car> findById(@PathVariable long id) {
-        Car requestedCar = carService.findById(id);
-        if (requestedCar == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Car with id " + id + " does not exist");
-        return ResponseEntity.ok(requestedCar);
+    public ResponseEntity<Car> findById(@PathVariable long id) throws ResponseStatusException {
+        return ResponseEntity.ok(carService.findById(id));
     }
 
     @PostMapping
@@ -42,9 +39,14 @@ public class CarController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        if (!carService.delete(id))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Car with id " + id + " seems to be nonexistent");
+    public ResponseEntity<Void> delete(@PathVariable long id) throws ResponseStatusException {
+        carService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> replace(@RequestBody Car car) throws ResponseStatusException {
+        carService.replace(car);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -26,7 +26,7 @@ public class CustomerService {
         return customers;
     }
 
-    public Customer findById(long id) {
+    public Customer findById(long id) throws ResponseStatusException {
         return customers.stream().
                 filter(customer -> customer.getId() == id).
                 findFirst().
@@ -40,7 +40,12 @@ public class CustomerService {
         return customer;
     }
 
-    public void delete(long id) {
+    public void delete(long id) throws ResponseStatusException {
         customers.remove(findById(id));
+    }
+
+    public void replace(Customer customer) throws ResponseStatusException {
+        delete(customer.getId());
+        customers.add(customer);
     }
 }
